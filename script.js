@@ -38,15 +38,28 @@ const defaultResponse = "No entendí eso. Intenta otra vez, si te importa.";
 function preprocessText(text) {
     text = text.toLowerCase();
     text = text.replace(/[^\w\s]/gi, '');
-    return text;
+    return text.split(' ').filter(word => word.length > 0);
 }
+
+const wordIndex = {};
+let index = 1;
+
+trainingData.forEach(data => {
+    const tokens = preprocessText(data.input);
+    tokens.forEach(token => {
+        if (!wordIndex[token]) {
+            wordIndex[token] = index;
+            index++;
+        }
+    });
+});
 
 function textToTensor(text) {
     const maxLen = 20;
     const tensor = new Float32Array(maxLen);
-    const processedText = preprocessText(text);
-    for (let i = 0; i < processedText.length && i < maxLen; i++) {
-        tensor[i] = processedText.charCodeAt(i);
+    const tokens = preprocessText(text);
+    for (let i = 0; i < tokens.length && i < maxLen; i++) {
+        tensor[i] = wordIndex[tokens[i]] || 0;
     }
     return tensor;
 }
@@ -55,7 +68,9 @@ let model;
 
 async function trainModel() {
     model = tf.sequential();
-    model.add(tf.layers.dense({units: 128, activation: 'relu', inputShape: [20]}));
+    model.add(tf.layers.embedding({inputDim: index, outputDim: 16, inputLength: 20}));
+    model.add(tf.layers.flatten());
+    model.add(tf.layers.dense({units: 128, activation: 'relu'}));
     model.add(tf.layers.dense({units: 64, activation: 'relu'}));
     model.add(tf.layers.dense({units: trainingData.length, activation: 'softmax'}));
     model.compile({optimizer: 'adam', loss: 'categoricalCrossentropy'});
@@ -76,7 +91,6 @@ async function getResponse() {
     }
 
     const userInput = document.getElementById('user-input').value;
-    document.getElementById('user-input').value = "";
     if (!userInput) return;
 
     addMessage('user', userInput);
@@ -96,7 +110,7 @@ function addMessage(sender, text) {
     messageDiv.classList.add('message', sender);
 
     const img = document.createElement('img');
-    img.src = sender === 'bot' ? './img/help/loginicial.png' : './img/help/user.png';
+    img.src = sender === 'bot' ? './img/help/loginicial.png' : './img/help/userft.png';
     img.alt = sender === 'bot' ? 'Bot' : 'Usuario';
 
     const bubble = document.createElement('div');
@@ -112,6 +126,13 @@ function addMessage(sender, text) {
 
 async function updateModel(newInput, newOutput) {
     trainingData.push({input: newInput, output: newOutput});
+    const tokens = preprocessText(newInput);
+    tokens.forEach(token => {
+        if (!wordIndex[token]) {
+            wordIndex[token] = index;
+            index++;
+        }
+    });
     await trainModel();
 }
 
