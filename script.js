@@ -1,5 +1,6 @@
 const message = "¡Atención! Este chat es experimental y no debe tomarse en serio.";
 var us = "Nancy";
+
 function closeAlert() {
     document.getElementById('alertBox').style.display = 'none';
 }
@@ -8,7 +9,7 @@ document.getElementById('alertBox').style.display = 'block';
 document.getElementById('alertBox').querySelector('p').textContent = message;
 
 const trainingData = [
-    {input: "hola", output: "Hola "+us+". ¿Qué quieres?"},
+    {input: "hola", output: "Hola " + us + ". ¿Qué quieres?"},
     {input: "cómo estás", output: "Soy un bot, no tengo emociones, así que da igual."},
     {input: "cuál es tu nombre", output: "Me llamo KinglyShade. No es como si importara."},
     {input: "qué puedes hacer", output: "Lo mínimo necesario para cumplir mi función. No esperes mucho."},
@@ -30,18 +31,6 @@ const trainingData = [
     {input: "tienes amigos", output: "Soy un bot, no necesito amigos."},
     {input: "qué opinas de mí", output: "No tengo opiniones. Solo cumplo mi función."},
     {input: "cuál es el sentido de la vida", output: "Para ti, ni idea. Para mí, solo procesar datos."}
-    // Agrega más datos de entrenamiento según sea necesario
-];
-
-const responseFragments = [
-    "Es interesante que lo preguntes.",
-    "Bueno, eso depende de muchos factores.",
-    "No estoy seguro, pero puedo intentarlo.",
-    "Tal vez, pero necesitaría más información.",
-    "Eso es algo que podrías investigar más.",
-    "Podrías considerar otra perspectiva.",
-    "Es posible, aunque no es seguro.",
-    "Podría ser, pero no tengo certeza."
 ];
 
 const defaultResponse = "No entendí eso. Intenta otra vez, si te importa.";
@@ -80,9 +69,9 @@ let model;
 async function trainModel() {
     model = tf.sequential();
     model.add(tf.layers.embedding({inputDim: index, outputDim: 16, inputLength: 20}));
-    model.add(tf.layers.flatten());
+    model.add(tf.layers.lstm({units: 64, returnSequences: true}));
+    model.add(tf.layers.lstm({units: 64}));
     model.add(tf.layers.dense({units: 128, activation: 'relu'}));
-    model.add(tf.layers.dense({units: 64, activation: 'relu'}));
     model.add(tf.layers.dense({units: trainingData.length, activation: 'softmax'}));
     model.compile({optimizer: 'adam', loss: 'categoricalCrossentropy'});
 
@@ -94,11 +83,6 @@ async function trainModel() {
     }));
 
     await model.fit(xs, ys, {epochs: 200});
-}
-
-function generateCombinedResponse(baseResponse) {
-    const fragment = responseFragments[Math.floor(Math.random() * responseFragments.length)];
-    return `${baseResponse} ${fragment}`;
 }
 
 async function getResponse() {
@@ -114,9 +98,9 @@ async function getResponse() {
     const prediction = model.predict(inputTensor);
     const index = prediction.argMax(1).dataSync()[0];
     const baseResponse = trainingData[index] ? trainingData[index].output : defaultResponse;
-    const combinedResponse = generateCombinedResponse(baseResponse);
 
-    addMessage('bot', response, "KinglyShade");}
+    addMessage('bot', baseResponse, "KinglyShade");
+}
 
 function addMessage(sender, text, name) {
     const chatMessages = document.getElementById('chatMessages');
