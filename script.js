@@ -1,5 +1,5 @@
 const message = "¡Atención! Este chat es experimental y no debe tomarse en serio.";
-
+var us = "Nancy";
 function closeAlert() {
     document.getElementById('alertBox').style.display = 'none';
 }
@@ -8,7 +8,7 @@ document.getElementById('alertBox').style.display = 'block';
 document.getElementById('alertBox').querySelector('p').textContent = message;
 
 const trainingData = [
-    {input: "hola", output: "Hola. ¿Qué quieres?"},
+    {input: "hola", output: "Hola "+us+". ¿Qué quieres?"},
     {input: "cómo estás", output: "Soy un bot, no tengo emociones, así que da igual."},
     {input: "cuál es tu nombre", output: "Me llamo KinglyShade. No es como si importara."},
     {input: "qué puedes hacer", output: "Lo mínimo necesario para cumplir mi función. No esperes mucho."},
@@ -30,14 +30,18 @@ const trainingData = [
     {input: "tienes amigos", output: "Soy un bot, no necesito amigos."},
     {input: "qué opinas de mí", output: "No tengo opiniones. Solo cumplo mi función."},
     {input: "cuál es el sentido de la vida", output: "Para ti, ni idea. Para mí, solo procesar datos."}
+    // Agrega más datos de entrenamiento según sea necesario
 ];
 
-const improvisations = [
-    "Eso es interesante. ¿Puedes contarme más?",
-    "No estoy seguro de entender. ¿Puedes explicarlo de otra manera?",
-    "Hmm, nunca había pensado en eso.",
-    "Podrías intentar buscar más información en Internet.",
-    "Es una pregunta difícil. Tal vez alguien más pueda ayudarte."
+const responseFragments = [
+    "Es interesante que lo preguntes.",
+    "Bueno, eso depende de muchos factores.",
+    "No estoy seguro, pero puedo intentarlo.",
+    "Tal vez, pero necesitaría más información.",
+    "Eso es algo que podrías investigar más.",
+    "Podrías considerar otra perspectiva.",
+    "Es posible, aunque no es seguro.",
+    "Podría ser, pero no tengo certeza."
 ];
 
 const defaultResponse = "No entendí eso. Intenta otra vez, si te importa.";
@@ -92,6 +96,11 @@ async function trainModel() {
     await model.fit(xs, ys, {epochs: 200});
 }
 
+function generateCombinedResponse(baseResponse) {
+    const fragment = responseFragments[Math.floor(Math.random() * responseFragments.length)];
+    return `${baseResponse} ${fragment}`;
+}
+
 async function getResponse() {
     if (!model) {
         await trainModel();
@@ -100,15 +109,14 @@ async function getResponse() {
     const userInput = document.getElementById('user-input').value;
     if (!userInput) return;
 
-    addMessage('Nancy', userInput, "User");
-
+    addMessage('user', userInput, us);
     const inputTensor = tf.tensor2d([textToTensor(userInput)]);
     const prediction = model.predict(inputTensor);
     const index = prediction.argMax(1).dataSync()[0];
-    const response = trainingData[index] ? trainingData[index].output : improvisations[Math.floor(Math.random() * improvisations.length)];
+    const baseResponse = trainingData[index] ? trainingData[index].output : defaultResponse;
+    const combinedResponse = generateCombinedResponse(baseResponse);
 
-    addMessage('bot', response, "KinglyShade");
-}
+    addMessage('bot', response, "KinglyShade");}
 
 function addMessage(sender, text, name) {
     const chatMessages = document.getElementById('chatMessages');
