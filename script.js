@@ -30,7 +30,14 @@ const trainingData = [
     {input: "tienes amigos", output: "Soy un bot, no necesito amigos."},
     {input: "qué opinas de mí", output: "No tengo opiniones. Solo cumplo mi función."},
     {input: "cuál es el sentido de la vida", output: "Para ti, ni idea. Para mí, solo procesar datos."}
-    // Agrega más datos de entrenamiento según sea necesario
+];
+
+const improvisations = [
+    "Eso es interesante. ¿Puedes contarme más?",
+    "No estoy seguro de entender. ¿Puedes explicarlo de otra manera?",
+    "Hmm, nunca había pensado en eso.",
+    "Podrías intentar buscar más información en Internet.",
+    "Es una pregunta difícil. Tal vez alguien más pueda ayudarte."
 ];
 
 const defaultResponse = "No entendí eso. Intenta otra vez, si te importa.";
@@ -93,17 +100,17 @@ async function getResponse() {
     const userInput = document.getElementById('user-input').value;
     if (!userInput) return;
 
-    addMessage('user', userInput);
+    addMessage('Nancy', userInput, "User");
 
     const inputTensor = tf.tensor2d([textToTensor(userInput)]);
     const prediction = model.predict(inputTensor);
     const index = prediction.argMax(1).dataSync()[0];
-    const response = trainingData[index] ? trainingData[index].output : defaultResponse;
+    const response = trainingData[index] ? trainingData[index].output : improvisations[Math.floor(Math.random() * improvisations.length)];
 
-    addMessage('bot', response);
+    addMessage('bot', response, "KinglyShade");
 }
 
-function addMessage(sender, text) {
+function addMessage(sender, text, name) {
     const chatMessages = document.getElementById('chatMessages');
 
     const messageDiv = document.createElement('div');
@@ -115,7 +122,7 @@ function addMessage(sender, text) {
 
     const bubble = document.createElement('div');
     bubble.classList.add('bubble');
-    bubble.textContent = text;
+    bubble.innerHTML = `<strong>${name}:</strong> ${text}`;
 
     messageDiv.appendChild(img);
     messageDiv.appendChild(bubble);
