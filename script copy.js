@@ -1,4 +1,5 @@
 const message = "¡Atención! Este chat es experimental y no debe tomarse en serio.";
+var us = "Nancy";
 
 function closeAlert() {
     document.getElementById('alertBox').style.display = 'none';
@@ -8,7 +9,7 @@ document.getElementById('alertBox').style.display = 'block';
 document.getElementById('alertBox').querySelector('p').textContent = message;
 
 const trainingData = [
-    {input: "hola", output: "Hola. ¿Qué quieres?"},
+    {input: "hola", output: "Hola " + us + ". ¿Qué quieres?"},
     {input: "cómo estás", output: "Soy un bot, no tengo emociones, así que da igual."},
     {input: "cuál es tu nombre", output: "Me llamo KinglyShade. No es como si importara."},
     {input: "qué puedes hacer", output: "Lo mínimo necesario para cumplir mi función. No esperes mucho."},
@@ -68,7 +69,9 @@ let model;
 async function trainModel() {
     model = tf.sequential();
     model.add(tf.layers.embedding({inputDim: index, outputDim: 16, inputLength: 20}));
-    model.add(tf.layers.lstm({units: 10}));
+    model.add(tf.layers.lstm({units: 64, returnSequences: true}));
+    model.add(tf.layers.lstm({units: 64}));
+    model.add(tf.layers.dense({units: 128, activation: 'relu'}));
     model.add(tf.layers.dense({units: trainingData.length, activation: 'softmax'}));
     model.compile({optimizer: 'adam', loss: 'categoricalCrossentropy'});
 
@@ -79,7 +82,7 @@ async function trainModel() {
         return arr;
     }));
 
-    await model.fit(xs, ys, {epochs: 500});
+    await model.fit(xs, ys, {epochs: 200});
 }
 
 async function getResponse() {
@@ -88,22 +91,20 @@ async function getResponse() {
     }
 
     const userInput = document.getElementById('user-input').value;
-    document.getElementById('user-input').value = "";
     if (!userInput) return;
 
-    addMessage('user', userInput);
-
+    addMessage('user', userInput, us);
     const inputTensor = tf.tensor2d([textToTensor(userInput)]);
     const prediction = model.predict(inputTensor);
     const index = prediction.argMax(1).dataSync()[0];
-    const response = trainingData[index] ? trainingData[index].output : defaultResponse;
+    const baseResponse = trainingData[index] ? trainingData[index].output : defaultResponse;
 
-    addMessage('bot', response);
+    addMessage('bot', baseResponse, "KinglyShade");
 }
 
-function addMessage(sender, text) {
+function addMessage(sender, text, name) {
     const chatMessages = document.getElementById('chatMessages');
-    
+
     const messageDiv = document.createElement('div');
     messageDiv.classList.add('message', sender);
 
@@ -113,7 +114,7 @@ function addMessage(sender, text) {
 
     const bubble = document.createElement('div');
     bubble.classList.add('bubble');
-    bubble.textContent = text;
+    bubble.innerHTML = `<strong>${name}:</strong> ${text}`;
 
     messageDiv.appendChild(img);
     messageDiv.appendChild(bubble);
