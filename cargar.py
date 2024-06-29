@@ -52,7 +52,7 @@ model.compile(optimizer='adam', loss='categorical_crossentropy', metrics=['accur
 # Entrenar el modelo y guardar el historial de entrenamiento
 history = model.fit(xs, ys, epochs=200)
 
-model.save('KinglyShade-v1.keras')
+model.save('KinglyShadev1.h5')
 
 # Graficar todas las métricas disponibles
 def plot_metrics(history):
