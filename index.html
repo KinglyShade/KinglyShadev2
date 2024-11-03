@@ -5,7 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <link rel="icon" href="img/help/logoks.ico" type="image/x-icon">
     <link rel="stylesheet" href="styles.css">
-    <title>KinglyShade</title>
+    <title>KinglyShade - Alpha 1.0</title>
 </head>
 <body>
     <div class="chat-container">
@@ -13,18 +13,28 @@
             <img src="./img/help/loginicial.png" alt="Logo">
             <h1>Kingly Shade - Alpha 1.0</h1>
         </div>
+
+        <!-- Botón para cambiar de versión -->
+        <div class="version-switcher">
+            <button onclick="window.location.href='index2.html'">Cambiar a Version 2.0</button>
+        </div>
+
+        <!-- Área de mensajes del chat -->
         <div class="chat-messages" id="chatMessages">
             <div class="message bot">
                 <img src="./img/help/loginicial.png" alt="Bot">
                 <div class="bubble"><strong>KinglyShade:</strong> Hola, ¿cómo puedo ayudarte?</div>
             </div>
         </div>
+
+        <!-- Input del chat para escribir mensajes -->
         <div class="chat-input">
             <input type="text" id="user-input" placeholder="Escribe un mensaje...">
             <button onclick="getResponse()">Enviar</button>
         </div>
     </div>
 
+    <!-- Caja de alerta con botón para cerrar -->
     <div class="alert-box" id="alertBox">
         <button class="close-btn" onclick="closeAlert()">×</button>
         <p>¡Atención! Este chat es experimental y no debe tomarse en serio.</p>
@@ -34,3 +44,4 @@
     <script src="script.js"></script>
 </body>
 </html>
+<!DOCTYPE html>

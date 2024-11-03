@@ -19,6 +19,24 @@ body {
     display: flex;
     flex-direction: column;
 }
+.version-switcher {
+    text-align: center;
+    margin: 10px 0;
+}
+
+.version-switcher button {
+    padding: 8px 15px;
+    background-color: #4cafaf;
+    border: none;
+    border-radius: 5px;
+    color: white;
+    cursor: pointer;
+    transition: background-color 0.3s;
+}
+
+.version-switcher button:hover {
+    background-color: #3a9e9e;
+}
 
 .chat-header {
     display: flex;
