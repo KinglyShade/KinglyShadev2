@@ -1,4 +1,4 @@
-const API_URL = "https://7a43-35-233-155-195.ngrok-free.app/generate"; // ⚠️ Cambia si ngrok se reinicia
+const API_URL = "https://5de0-35-233-155-195.ngrok-free.app/generate"; // ⚠️ Cambia si ngrok se reinicia
 
 // Generar o recuperar el ID único del usuario
 let userId = localStorage.getItem("user_id");
