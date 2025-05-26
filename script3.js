@@ -1,4 +1,4 @@
-const API_URL = "https://4627-34-82-40-114.ngrok-free.app/generate"; // cambia esto si ngrok genera uno nuevo
+const API_URL = "https://fd45-34-82-40-114.ngrok-free.app/generate"; // ⚠️ Cambia si ngrok se reinicia
 
 // Generar o recuperar el ID único del usuario
 let userId = localStorage.getItem("user_id");
@@ -37,7 +37,31 @@ async function getResponse() {
     removeMessageById(loadingMsgId);
 
     if (data.status === "success") {
-      addMessage("bot", `<img src="${data.url}" alt="Imagen generada" style="max-width: 100%; border-radius: 8px;">`);
+      const imageHtml = `
+        <div style="text-align: center;">
+          <img 
+            src="${data.url}" 
+            alt="Imagen generada" 
+            style="max-width: 100%; border-radius: 8px; margin-top: 10px;"
+          >
+          <br>
+          <a 
+            href="${data.url}" 
+            download="imagen-generada.png"
+            style="
+              display: inline-block;
+              margin-top: 8px;
+              padding: 6px 12px;
+              background-color: #5c67f2;
+              color: white;
+              text-decoration: none;
+              border-radius: 6px;
+              font-weight: bold;
+            "
+          >⬇ Descargar imagen</a>
+        </div>
+      `;
+      addMessage("bot", imageHtml);
     } else {
       addMessage("bot", "❌ Error generando la imagen: " + data.message);
     }
@@ -48,7 +72,7 @@ async function getResponse() {
   }
 }
 
-// Función para añadir mensajes
+// Función para añadir mensajes al chat
 function addMessage(sender, text) {
   const chatMessages = document.getElementById("chatMessages");
 
@@ -71,16 +95,16 @@ function addMessage(sender, text) {
 
   chatMessages.scrollTop = chatMessages.scrollHeight;
 
-  return msgId; // Devuelve el ID para poder eliminarlo después si es necesario
+  return msgId;
 }
 
-// Función para quitar un mensaje por ID
+// Función para eliminar mensaje por ID (por ejemplo el mensaje de carga)
 function removeMessageById(id) {
   const elem = document.getElementById(id);
   if (elem) elem.remove();
 }
 
-// Cerrar alerta
+// Función para cerrar alertas (si las usas en tu HTML)
 function closeAlert() {
   document.getElementById("alertBox").style.display = "none";
 }
