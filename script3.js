@@ -108,7 +108,7 @@ function removeMessageById(id) {
 function closeAlert() {
   document.getElementById("alertBox").style.display = "none";
 }
-*/const API_URL = "https://a0ab-34-91-135-170.ngrok-free.app/generate"; // ← cambia esto cada vez que reinicies ngrok
+*/const API_URL = "https://7599-34-91-135-170.ngrok-free.app/generate"; // ← cambia esto cada vez que reinicies ngrok
 
 // ID único por usuario
 let userId = localStorage.getItem("user_id");
